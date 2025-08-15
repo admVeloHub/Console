@@ -1,0 +1,485 @@
+//frontend html review - VERSÃO CORRIGIDA
+//===========================
+
+<!-- Este é o seu arquivo Index.html (console frontend) -->
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console de Conteúdo</title>
+    <style>
+        :root {
+            --header-gradient-start: #d0d0d0;
+            --header-gradient-mid: #aed6f1;
+            --header-gradient-end: #d0d0d0;
+            --nav-button-bg: #1a73e8;
+            --nav-button-hover-bg: #1765cf;
+            --background-color: #f0f2f5;
+            --form-bg-color: #ffffff;
+            --text-color: #333;
+            --border-color: #ccc;
+            --toolbar-bg: #f8f9fa;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Verdana, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(to right, var(--header-gradient-start), var(--header-gradient-mid), var(--header-gradient-end));
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .nav-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+       
+        .nav-button {
+            background-color: var(--nav-button-bg);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 18px 35px;
+            margin: 10px;
+            font-size: 1.2em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            min-width: 280px;
+            text-align: center;
+        }
+
+        .nav-button:hover {
+            background-color: var(--nav-button-hover-bg);
+            transform: translateY(-2px);
+        }
+
+        .form-container {
+            background-color: var(--form-bg-color);
+            padding: 2em 3em;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 700px;
+        }
+       
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1em;
+        }
+       
+        .form-header h2 {
+            margin: 0;
+            color: var(--nav-button-bg);
+        }
+       
+        .back-button {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: #555;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.5em;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: Verdana, sans-serif;
+        }
+       
+        .editor-toolbar {
+            background-color: var(--toolbar-bg);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            padding: 8px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+        }
+
+        .toolbar-button {
+            background: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            margin-right: 5px;
+            padding: 5px 8px;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+
+        .toolbar-button:hover {
+            background-color: #e0e0e0;
+            border-color: #ccc;
+        }
+
+        .content-editor {
+            border: 1px solid var(--border-color);
+            min-height: 150px;
+            padding: 12px;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            outline: none;
+        }
+       
+        .content-editor:focus {
+            border-color: var(--nav-button-bg);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--nav-button-bg);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .loader {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .status {
+            margin-top: 1em;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <!-- CABEÇALHO FIXO -->
+    <header class="header">
+        <h1>Console de Conteúdo</h1>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL QUE MUDA -->
+    <main class="main-content">
+     
+        <!-- TELA DE NAVEGAÇÃO INICIAL -->
+        <div id="nav-container">
+            <button class="nav-button" id="btn-artigos">Central de Artigos</button>
+            <button class="nav-button" id="btn-velonews">Velonews</button>
+            <button class="nav-button" id="btn-bot">Bot de Processos</button>
+        </div>
+
+        <!-- TELA DO FORMULÁRIO (INICIALMENTE OCULTA) -->
+        <div id="form-container" class="form-container" style="display: none;">
+            <div class="form-header">
+                <h2 id="form-title"></h2>
+                <button class="back-button" id="back-to-nav">Voltar</button>
+            </div>
+            <form id="data-form">
+                <div id="dynamic-fields"></div>
+                <div id="form-footer" style="display: none;">
+                    <button type="submit" class="submit-button">Publicar</button>
+                </div>
+            </form>
+            <div id="status"></div>
+        </div>
+
+    </main>
+
+    <!-- IFRAME OCULTO PARA BACKEND -->
+    <iframe id="backend-iframe" 
+            src="https://script.google.com/macros/s/AKfycbwuX73q38Ypdpigm0TG1AOMj5wNeDHjRi0PhZFI4F_SxA572btd8l2KVYUPEkQFpT9vyw/exec?console=true" 
+            style="display: none; width: 0; height: 0; border: none;">
+    </iframe>
+
+    <script>
+        let currentSheet = '';
+        const categoryMap = {
+            "Antecipação": "01_antecipação", 
+            "Restituição e Declaração": "02_restituição",
+            "Calculadora": "03_Calculadora e Darf", 
+            "Conta e Planos": "04_Conta",
+            "POPs B2C": "05_POP", 
+            "Ferramentas do Agente": "06_ferramentas",
+            "Manual de Voz e Estilo": "07_manual de voz"
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('btn-artigos').addEventListener('click', () => showFormFor('Artigos', 'Novo Lançamento - Central de Artigos'));
+            document.getElementById('btn-velonews').addEventListener('click', () => showFormFor('Velonews', 'Novo Lançamento - Velonews'));
+            document.getElementById('btn-bot').addEventListener('click', () => showFormFor('Bot_perguntas', 'Novo Lançamento - Bot de Processos'));
+           
+            document.getElementById('back-to-nav').addEventListener('click', showNav);
+            document.getElementById('data-form').addEventListener('submit', handleFormSubmit);
+            
+            // Listener para resposta do backend - MOVIDO PARA AQUI
+            window.addEventListener('message', function(event) {
+                if (event.data.type === 'processingComplete') {
+                    const result = event.data.result;
+                    const statusDiv = document.getElementById('status');
+                    const submitButton = document.querySelector('button[type="submit"]');
+                    
+                    if (result.status === 'success') {
+                        statusDiv.textContent = result.message;
+                        statusDiv.className = 'status success';
+                        setTimeout(() => showNav(), 2000);
+                    } else {
+                        statusDiv.textContent = 'Erro: ' + (result.message || 'Erro desconhecido');
+                        statusDiv.className = 'status error';
+                        submitButton.disabled = false;
+                    }
+                } else if (event.data.type === 'processingError') {
+                    const statusDiv = document.getElementById('status');
+                    const submitButton = document.querySelector('button[type="submit"]');
+                    statusDiv.textContent = 'Erro: ' + event.data.error;
+                    statusDiv.className = 'status error';
+                    submitButton.disabled = false;
+                }
+            });
+        });
+
+        function showFormFor(sheetName, formTitle) {
+            currentSheet = sheetName;
+            document.getElementById('nav-container').style.display = 'none';
+            document.getElementById('form-container').style.display = 'block';
+            document.getElementById('form-title').textContent = formTitle;
+           
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = '<div class="loader">Carregando...</div>';
+           
+            if (sheetName === 'Artigos') {
+                createCustomArtigosForm();
+            } else if (sheetName === 'Velonews') {
+                createCustomVelonewsForm();
+            } else {
+                createCustomBotForm();
+            }
+        }
+
+        function showNav() {
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('nav-container').style.display = 'flex';
+            document.getElementById('data-form').reset();
+            document.getElementById('dynamic-fields').innerHTML = '';
+            document.getElementById('form-footer').style.display = 'none';
+            document.getElementById('status').innerHTML = '';
+            currentSheet = '';
+        }
+
+        function createCustomArtigosForm() {
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="custom-categoria">Categoria:</label>
+                    <select id="custom-categoria" name="custom_categoria" onchange="updateArtigoCategoria(this)">
+                        <option value="">-- Selecione uma categoria --</option>
+                        <option>Antecipação</option><option>Restituição e Declaração</option><option>Calculadora</option><option>Conta e Planos</option><option>POPs B2C</option><option>Ferramentas do Agente</option><option>Manual de Voz e Estilo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="artigo_titulo">Título:</label>
+                    <input type="text" id="artigo_titulo" name="artigo_titulo">
+                </div>
+                <div class="form-group">
+                    <label for="id">Tag:</label>
+                    <input type="text" id="id" name="id">
+                </div>
+                <div class="form-group">
+                    <label for="artigo_conteudo">Conteúdo:</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="toolbar-button" onclick="formatDoc('bold')"><b>B</b></button>
+                        <button type="button" class="toolbar-button" onclick="formatDoc('italic')"><i>I</i></button>
+                        <button type="button" class="toolbar-button" onclick="formatDoc('insertUnorderedList')">●</button>
+                    </div>
+                    <div id="artigo_conteudo_editor" class="content-editor" contenteditable="true"></div>
+                </div>
+                <input type="hidden" id="categoria_id" name="categoria_id">
+                <input type="hidden" id="categoria_titulo" name="categoria_titulo">
+                <input type="hidden" id="artigo_conteudo" name="artigo_conteudo">
+            `;
+            document.getElementById('form-footer').style.display = 'block';
+        }
+
+        function createCustomVelonewsForm() {
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="title">Título:</label>
+                    <input type="text" id="title" name="title">
+                </div>
+               
+                <!-- Checkbox para o Alerta Urgente -->
+                <div class="form-group" style="display: flex; align-items: center;">
+                    <input type="checkbox" id="alerta_critico_checkbox" name="alerta_critico_checkbox" style="width: auto; margin-right: 10px; height: 1.2em;">
+                    <label for="alerta_critico_checkbox" style="margin-bottom: 0; font-weight: normal;">Alerta Urgente</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Conteúdo:</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="toolbar-button" onclick="formatDoc('bold')"><b>B</b></button>
+                        <button type="button" class="toolbar-button" onclick="formatDoc('italic')"><i>I</i></button>
+                        <button type="button" class="toolbar-button" onclick="formatDoc('insertUnorderedList')">●</button>
+                    </div>
+                    <div id="content_editor" class="content-editor" contenteditable="true"></div>
+                </div>
+                <input type="hidden" id="content" name="content">
+            `;
+            document.getElementById('form-footer').style.display = 'block';
+        }
+
+        function createCustomBotForm() {
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="topico">Tópico:</label>
+                    <input type="text" id="topico" name="topico">
+                </div>
+                <div class="form-group">
+                    <label for="contexto">Contexto:</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="toolbar-button" onclick="formatDoc('bold')"><b>B</b></button>
+                        <button type="button" class="toolbar-button" onclick="formatDoc('italic')"><i>I</i></button>
+                        <button type="button" class="toolbar-button" onclick="formatDoc('insertUnorderedList')">●</button>
+                    </div>
+                    <div id="contexto_editor" class="content-editor" contenteditable="true"></div>
+                </div>
+                <div class="form-group">
+                    <label for="Palavras_chave">Palavras-chave:</label>
+                    <input type="text" id="Palavras_chave" name="Palavras_chave" placeholder="palavra1, palavra2, palavra3">
+                </div>
+                <div class="form-group">
+                    <label for="urls_imagens">URLs de Imagens:</label>
+                    <input type="text" id="urls_imagens" name="urls_imagens" placeholder="url1, url2, url3">
+                </div>
+                <input type="hidden" id="contexto" name="contexto">
+            `;
+            document.getElementById('form-footer').style.display = 'block';
+        }
+       
+        function formatDoc(command) {
+            document.execCommand(command, false, null);
+        }
+
+        function updateArtigoCategoria(selectElement) {
+            const selectedTitle = selectElement.value;
+            const selectedId = categoryMap[selectedTitle] || '';
+            document.getElementById('categoria_titulo').value = selectedTitle;
+            document.getElementById('categoria_id').value = selectedId;
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+           
+            const editor = document.querySelector('.content-editor');
+            if (editor) {
+                const contentKey = editor.id.replace('_editor', '');
+                document.getElementById(contentKey).value = editor.innerHTML;
+            }
+
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Enviando e formatando...';
+            statusDiv.className = 'status';
+           
+            const dataObject = {};
+            new FormData(this).forEach((value, key) => { dataObject[key] = value; });
+           
+            if (currentSheet === 'Velonews') {
+                const checkbox = document.getElementById('alerta_critico_checkbox');
+                dataObject['alerta_critico'] = checkbox.checked ? 'Y' : 'N';
+                delete dataObject['alerta_critico_checkbox'];
+            }
+           
+            const submission = { sheetName: currentSheet, data: dataObject };
+
+            // Envia dados via POST para a API do MongoDB
+            fetch('http://localhost:3000/api/submit', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(submission)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    statusDiv.textContent = 'Publicado com sucesso!';
+                    statusDiv.className = 'status success';
+                    setTimeout(() => showNav(), 2000);
+                } else {
+                    throw new Error(data.message || 'Erro desconhecido');
+                }
+            })
+            .catch(error => {
+                console.error('Erro no Fetch:', error);
+                statusDiv.textContent = 'Erro ao enviar dados: ' + error.message;
+                statusDiv.className = 'status error';
+                submitButton.disabled = false;
+            });
+            
+        }
+    </script>
+</body>
+</html>

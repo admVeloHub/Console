@@ -1,0 +1,171 @@
+// backend html review - Atualizado para usar MongoDB
+===============================
+
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <title>Processador de Dados - MongoDB</title>
+    <style>
+        body {
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #202124;
+        }
+        
+        #status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .status-processing {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+        
+        .status-success {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .status-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        
+        .connection-info {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffcc02;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div id="status" class="status-processing">Verificando conexão com servidor...</div>
+    <div id="connection-info" class="connection-info" style="display: none;">
+        <strong>Status da Conexão:</strong> <span id="connection-status">Verificando...</span><br>
+        <strong>Armazenamento:</strong> <span id="storage-type">Verificando...</span>
+    </div>
+    
+    <script>
+        // Configuração da API
+        const API_BASE_URL = 'http://localhost:3000';
+        
+        // Verificar status da conexão com o servidor
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/status`);
+                const status = await response.json();
+                
+                document.getElementById('connection-status').textContent = 
+                    status.mongoConnected ? 'Conectado' : 'Desconectado';
+                document.getElementById('storage-type').textContent = 
+                    status.storage === 'mongodb' ? 'MongoDB' : 'Local';
+                document.getElementById('connection-info').style.display = 'block';
+                
+                return status;
+            } catch (error) {
+                console.error('Erro ao verificar status do servidor:', error);
+                document.getElementById('status').innerHTML = `
+                    <div class="status error">
+                        ❌ Erro: Não foi possível conectar ao servidor
+                    </div>
+                `;
+                return null;
+            }
+        }
+        
+        // Função principal para processar submissões
+        async function processSubmission(submission) {
+            console.log("Backend recebeu para processar:", submission);
+            
+            try {
+                // Verificar status do servidor primeiro
+                const serverStatus = await checkServerStatus();
+                if (!serverStatus) {
+                    throw new Error('Servidor não disponível');
+                }
+                
+                // Atualizar status para processando
+                document.getElementById('status').innerHTML = `
+                    <div class="status-processing">
+                        🔄 Processando dados...
+                    </div>
+                `;
+                
+                // Enviar dados para a API do servidor
+                const response = await fetch(`${API_BASE_URL}/api/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sheetName: submission.sheetName || 'Artigos',
+                        data: submission.data
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Sucesso
+                    document.getElementById('status').innerHTML = `
+                        <div class="status-success">
+                            ✅ ${result.message}
+                        </div>
+                    `;
+                    
+                    // Retornar sucesso para o frontend principal
+                    window.parent.postMessage({
+                        type: 'processingComplete',
+                        result: result,
+                        storage: result.storage
+                    }, '*');
+                    
+                } else {
+                    throw new Error(result.message || 'Erro desconhecido');
+                }
+                
+            } catch (error) {
+                console.error("Backend: Erro ao processar dados", error);
+                
+                document.getElementById('status').innerHTML = `
+                    <div class="status-error">
+                        ❌ Erro: ${error.message}
+                    </div>
+                `;
+                
+                // Retornar erro para o frontend principal
+                window.parent.postMessage({
+                    type: 'processingError',
+                    error: error.message
+                }, '*');
+            }
+        }
+        
+        // Listener para receber dados do frontend principal
+        window.addEventListener('message', function(event) {
+            // Verificação de segurança para a origem (opcional)
+            // if (event.origin !== "URL_DO_SEU_GOOGLE_SITE") return;
+            
+            if (event.data.type === 'processData') {
+                processSubmission(event.data.submission);
+            }
+        });
+        
+        // Verificar status inicial
+        checkServerStatus();
+    </script>
+</body>
+</html>

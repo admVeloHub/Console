@@ -1,0 +1,46 @@
+{
+  "name": "console-de-conteudo",
+  "version": "1.0.0",
+  "description": "Console de Conteúdo - Projeto de revisão",
+  "main": "script review.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "tsc \"front review.ts\"",
+    "server": "node server.js",
+    "migrate": "node migrate-sheets-to-mongodb.js",
+    "migrate:confirm": "node migrate-sheets-to-mongodb.js --confirm",
+    "migrate:automated": "node migrate-sheets-automated.js",
+    "migrate:automated:check": "node migrate-sheets-automated.js --check",
+    "migrate:automated:confirm": "node migrate-sheets-automated.js --migrate --confirm",
+    "migrate:manual": "node migrate-manual.js",
+    "migrate:sample": "node migrate-manual.js --sample --confirm",
+    "check": "node migrate-manual.js --check",
+    "clear": "node clear-mongodb.js",
+    "clear:confirm": "node clear-mongodb.js --confirm",
+    "test": "node test-mongodb-integration.js",
+    "test:integration": "node test-mongodb-integration.js"
+  },
+  "keywords": [
+    "console",
+    "conteudo",
+    "review"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "googleapis": "^133.0.0",
+    "mongodb": "^6.18.0",
+    "mongoose": "^8.17.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

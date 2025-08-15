@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeloHub - Central de Conteúdo</title>
+    <style>
+        :root {
+            /* VeloHub Brand Colors */
+            --velohub-primary: #1a73e8;
+            --velohub-secondary: #34a853;
+            --velohub-accent: #ea4335;
+            --velohub-warning: #fbbc04;
+            
+            /* Gradients */
+            --header-gradient: linear-gradient(135deg, #0d47a1 0%, #1a73e8 50%, #0d47a1 100%);
+            --button-gradient: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
+            --button-hover-gradient: linear-gradient(135deg, #1765cf 0%, #3b78e7 100%);
+            
+            /* Neutral Colors */
+            --background-color: #f8f9fa;
+            --surface-color: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border-color: #dadce0;
+            --shadow-light: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-medium: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-heavy: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Modern Header */
+        .header {
+            background: var(--header-gradient);
+            color: white;
+            padding: 8px 24px;
+            text-align: center;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 2px;
+            font-weight: 400;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85em;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .connection-status.connected {
+            background: rgba(52, 168, 83, 0.2);
+            border-color: rgba(52, 168, 83, 0.3);
+        }
+
+        .connection-status.disconnected {
+            background: rgba(234, 67, 53, 0.2);
+            border-color: rgba(234, 67, 53, 0.3);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34a853;
+        }
+
+        .connection-status.disconnected .status-indicator {
+            background: #ea4335;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+       
+        .nav-button {
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 24px 32px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-button:hover {
+            background: var(--button-hover-gradient);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
+        }
+
+        .nav-button:active {
+            transform: translateY(-2px);
+        }
+
+        .nav-button-icon {
+            font-size: 1.5em;
+            margin-bottom: 4px;
+        }
+
+        .nav-button-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .nav-button-subtitle {
+            font-size: 0.85em;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        /* Form Container */
+        .form-container {
+            background-color: var(--surface-color);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-heavy);
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+       
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+       
+        .form-header h2 {
+            margin: 0;
+            color: var(--velohub-primary);
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+       
+        .back-button {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            border-color: var(--velohub-primary);
+            color: var(--velohub-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: var(--surface-color);
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--velohub-primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+       
+        .editor-toolbar {
+            background-color: var(--background-color);
+            border: 2px solid var(--border-color);
+            border-bottom: none;
+            padding: 12px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-button {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            padding: 8px 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        .toolbar-button:hover {
+            background-color: var(--velohub-primary);
+            color: white;
+            border-color: var(--velohub-primary);
+        }
+
+        .content-editor {
+            border: 2px solid var(--border-color);
+            min-height: 150px;
+            max-height: 200px;
+            padding: 16px;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            outline: none;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            overflow-y: auto;
+        }
+       
+        .content-editor:focus {
+            border-color: var(--velohub-primary);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 16px;
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
+
+        .submit-button:hover {
+            background: var(--button-hover-gradient);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* Status and Loading */
+        .loader {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 1.1em;
+        }
+
+        .status {
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background-color: rgba(52, 168, 83, 0.1);
+            color: #137333;
+            border: 1px solid rgba(52, 168, 83, 0.3);
+        }
+
+        .status.error {
+            background-color: rgba(234, 67, 53, 0.1);
+            color: #c5221f;
+            border: 1px solid rgba(234, 67, 53, 0.3);
+        }
+
+        /* Preview Section */
+        .preview-section {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--background-color);
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+        }
+
+        .preview-section h3 {
+            margin: 0 0 16px 0;
+            color: var(--velohub-primary);
+            font-size: 1.2em;
+        }
+
+        .preview-content {
+            background: var(--surface-color);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                padding: 20px;
+                margin: 0 16px;
+            }
+            
+            .form-header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .nav-container, .form-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <h1>Console VeloHub</h1>
+                <div class="header-subtitle">Central de Conteúdo Inteligente</div>
+            </div>
+            <div class="connection-status" id="connection-status">
+                <div class="status-indicator"></div>
+                <span>MongoDB: Conectando...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="nav-container" class="nav-container">
+            <div class="nav-grid">
+                <button id="btn-artigos" class="nav-button">
+                    <div class="nav-button-icon">📄</div>
+                    <div class="nav-button-title">Artigos</div>
+                    <div class="nav-button-subtitle">Base de conhecimento</div>
+                </button>
+                
+                <button id="btn-velonews" class="nav-button">
+                    <div class="nav-button-icon">📰</div>
+                    <div class="nav-button-title">Velonews</div>
+                    <div class="nav-button-subtitle">Alertas e notícias</div>
+                </button>
+                
+                <button id="btn-bot" class="nav-button">
+                    <div class="nav-button-icon">🤖</div>
+                    <div class="nav-button-title">Bot Perguntas</div>
+                    <div class="nav-button-subtitle">FAQ e automação</div>
+                </button>
+            </div>
+        </div>
+
+        <div id="form-container" class="form-container" style="display: none;">
+            <div class="form-header">
+                <h2 id="form-title">Formulário</h2>
+                <button id="back-to-nav" class="back-button">
+                    ← Voltar
+                </button>
+            </div>
+            
+            <form id="data-form">
+                <div id="dynamic-fields"></div>
+                
+                <div id="form-footer" style="display: none;">
+                    <div class="preview-section" id="preview-section" style="display: none;">
+                        <h3>Preview do Conteúdo</h3>
+                        <div class="preview-content" id="preview-content"></div>
+                    </div>
+                    
+                    <button type="submit" class="submit-button">
+                        Publicar Conteúdo
+                    </button>
+                </div>
+            </form>
+            
+            <div id="status"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSheet = '';
+        let isConnected = false;
+        let mongoData = {
+            artigos: [],
+            velonews: [],
+            botPerguntas: []
+        };
+
+        // Categorias de artigos
+        const categoriasArtigos = {
+            "Antecipação": "01_antecipação",
+            "Restituição e Declaração": "02_restituição",
+            "Calculadora": "03_Calculadora e Darf", 
+            "Conta e Planos": "04_Conta",
+            "POPs B2C": "05_POP", 
+            "Ferramentas do Agente": "06_ferramentas",
+            "Manual de Voz e Estilo": "07_manual de voz"
+        };
+
+        // Verificar conexão com MongoDB e carregar dados
+        async function checkMongoConnection() {
+            try {
+                const response = await fetch('http://localhost:3000/api/central-agente', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        mongoData = data.data;
+                        isConnected = true;
+                        updateConnectionStatus(true);
+                        updateButtonCounts();
+                        return true;
+                    }
+                }
+                throw new Error('Servidor não respondeu corretamente');
+            } catch (error) {
+                console.log('MongoDB não está disponível:', error.message);
+                isConnected = false;
+                updateConnectionStatus(false);
+                return false;
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusElement = document.getElementById('connection-status');
+            if (connected) {
+                statusElement.innerHTML = '<div class="status-indicator"></div><span>MongoDB: Conectado</span>';
+                statusElement.className = 'connection-status connected';
+            } else {
+                statusElement.innerHTML = '<div class="status-indicator"></div><span>MongoDB: Desconectado</span>';
+                statusElement.className = 'connection-status disconnected';
+            }
+        }
+
+        function updateButtonCounts() {
+            const artigosCount = mongoData.artigos.length;
+            const velonewsCount = mongoData.velonews.length;
+            const botCount = mongoData.botPerguntas.length;
+
+            document.querySelector('#btn-artigos .nav-button-subtitle').textContent = 
+                `${artigosCount} artigos disponíveis`;
+            document.querySelector('#btn-velonews .nav-button-subtitle').textContent = 
+                `${velonewsCount} alertas ativos`;
+            document.querySelector('#btn-bot .nav-button-subtitle').textContent = 
+                `${botCount} perguntas cadastradas`;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Verificar conexão inicial
+            checkMongoConnection();
+            
+            document.getElementById('btn-artigos').addEventListener('click', () => showFormFor('Artigos', 'Novo Artigo - VeloHub'));
+            document.getElementById('btn-velonews').addEventListener('click', () => showFormFor('Velonews', 'Novo Velonews - VeloHub'));
+            document.getElementById('btn-bot').addEventListener('click', () => showFormFor('Bot_perguntas', 'Nova Pergunta - VeloHub'));
+           
+            // Verificar se o botão de voltar existe
+            const backButton = document.getElementById('back-to-nav');
+            if (backButton) {
+                console.log('Botão de voltar encontrado:', backButton);
+                backButton.addEventListener('click', showNav);
+            } else {
+                console.error('Botão de voltar não encontrado!');
+            }
+            
+            document.getElementById('data-form').addEventListener('submit', handleFormSubmit);
+            
+            // Atualizar preview quando o conteúdo mudar
+            document.addEventListener('input', updatePreview);
+        });
+
+        function showFormFor(sheetName, formTitle) {
+            currentSheet = sheetName;
+            document.getElementById('nav-container').style.display = 'none';
+            document.getElementById('form-container').style.display = 'block';
+            document.getElementById('form-title').textContent = formTitle;
+           
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = '<div class="loader">Carregando formulário...</div>';
+           
+            if (sheetName === 'Artigos') {
+                createCustomArtigosForm();
+            } else if (sheetName === 'Velonews') {
+                createCustomVelonewsForm();
+            } else {
+                createCustomBotForm();
+            }
+        }
+
+        function showNav() {
+            console.log('Função showNav executada');
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('nav-container').style.display = 'flex';
+            document.getElementById('data-form').reset();
+            document.getElementById('dynamic-fields').innerHTML = '';
+            document.getElementById('form-footer').style.display = 'none';
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('preview-section').style.display = 'none';
+            currentSheet = '';
+        }
+
+        function createCustomArtigosForm() {
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="custom-categoria">Categoria:</label>
+                    <select id="custom-categoria" name="custom_categoria" onchange="updateArtigoCategoria(this)">
+                        <option value="">-- Selecione uma categoria --</option>
+                        ${Object.keys(categoriasArtigos).map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="artigo_titulo">Título do Artigo:</label>
+                    <input type="text" id="artigo_titulo" name="artigo_titulo" placeholder="Digite o título do artigo">
+                </div>
+                <div class="form-group">
+                    <label for="artigo_conteudo">Conteúdo:</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="toolbar-button" onclick="formatText('bold')">B</button>
+                        <button type="button" class="toolbar-button" onclick="formatText('italic')">I</button>
+                        <button type="button" class="toolbar-button" onclick="formatText('underline')">U</button>
+                        <button type="button" class="toolbar-button" onclick="insertList()">• Lista</button>
+                        <button type="button" class="toolbar-button" onclick="insertLink()">🔗 Link</button>
+                    </div>
+                    <div id="artigo_conteudo" class="content-editor" contenteditable="true" name="artigo_conteudo"></div>
+                </div>
+            `;
+            document.getElementById('form-footer').style.display = 'block';
+        }
+
+        function createCustomVelonewsForm() {
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="title">Título do Velonews:</label>
+                    <input type="text" id="title" name="title" placeholder="Digite o título do alerta">
+                </div>
+                <div class="form-group">
+                    <label for="content">Conteúdo:</label>
+                    <div class="editor-toolbar">
+                        <button type="button" class="toolbar-button" onclick="formatText('bold')">B</button>
+                        <button type="button" class="toolbar-button" onclick="formatText('italic')">I</button>
+                        <button type="button" class="toolbar-button" onclick="formatText('underline')">U</button>
+                        <button type="button" class="toolbar-button" onclick="insertList()">• Lista</button>
+                        <button type="button" class="toolbar-button" onclick="insertLink()">🔗 Link</button>
+                    </div>
+                    <div id="content" class="content-editor" contenteditable="true" name="content"></div>
+                </div>
+                <div class="form-group">
+                    <label for="alerta_critico">Alerta Crítico:</label>
+                    <select id="alerta_critico" name="alerta_critico">
+                        <option value="N">Não</option>
+                        <option value="Y">Sim</option>
+                    </select>
+                </div>
+            `;
+            document.getElementById('form-footer').style.display = 'block';
+        }
+
+        function createCustomBotForm() {
+            const dynamicFieldsDiv = document.getElementById('dynamic-fields');
+            dynamicFieldsDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="topico">Tópico:</label>
+                    <input type="text" id="topico" name="topico" placeholder="Digite o tópico da pergunta">
+                </div>
+                <div class="form-group">
+                    <label for="contexto">Contexto:</label>
+                    <textarea id="contexto" name="contexto" rows="4" placeholder="Descreva o contexto da pergunta"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="Palavras_chave">Palavras-chave:</label>
+                    <input type="text" id="Palavras_chave" name="Palavras_chave" placeholder="Digite as palavras-chave separadas por vírgula">
+                </div>
+                <div class="form-group">
+                    <label for="URLs_de_Imagens">URLs de Imagens:</label>
+                    <input type="text" id="URLs_de_Imagens" name="URLs_de_Imagens" placeholder="Digite as URLs das imagens separadas por vírgula">
+                </div>
+            `;
+            document.getElementById('form-footer').style.display = 'block';
+        }
+
+        function updateArtigoCategoria(select) {
+            const categoria = select.value;
+            if (categoria && categoriasArtigos[categoria]) {
+                // Aqui você pode adicionar lógica adicional baseada na categoria selecionada
+                console.log('Categoria selecionada:', categoria, 'ID:', categoriasArtigos[categoria]);
+            }
+        }
+
+        function formatText(command) {
+            document.execCommand(command, false, null);
+        }
+
+        function insertList() {
+            document.execCommand('insertUnorderedList', false, null);
+        }
+
+        function insertLink() {
+            const url = prompt('Digite a URL:');
+            if (url) {
+                document.execCommand('createLink', false, url);
+            }
+        }
+
+        function updatePreview() {
+            const previewSection = document.getElementById('preview-section');
+            const previewContent = document.getElementById('preview-content');
+            
+            if (currentSheet === 'Artigos') {
+                const titulo = document.getElementById('artigo_titulo')?.value || '';
+                const conteudo = document.getElementById('artigo_conteudo')?.innerHTML || '';
+                
+                if (titulo || conteudo) {
+                    previewContent.innerHTML = `
+                        <h4>${titulo || 'Título do Artigo'}</h4>
+                        <div>${conteudo || 'Conteúdo do artigo aparecerá aqui...'}</div>
+                    `;
+                    previewSection.style.display = 'block';
+                } else {
+                    previewSection.style.display = 'none';
+                }
+            } else if (currentSheet === 'Velonews') {
+                const titulo = document.getElementById('title')?.value || '';
+                const conteudo = document.getElementById('content')?.innerHTML || '';
+                
+                if (titulo || conteudo) {
+                    previewContent.innerHTML = `
+                        <h4>${titulo || 'Título do Velonews'}</h4>
+                        <div>${conteudo || 'Conteúdo do velonews aparecerá aqui...'}</div>
+                    `;
+                    previewSection.style.display = 'block';
+                } else {
+                    previewSection.style.display = 'none';
+                }
+            }
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const submitButton = document.querySelector('.submit-button');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Publicando...';
+            submitButton.disabled = true;
+            
+            try {
+                let formData = {};
+                
+                if (currentSheet === 'Artigos') {
+                    const categoria = document.getElementById('custom-categoria').value;
+                    if (!categoria) {
+                        throw new Error('Por favor, selecione uma categoria');
+                    }
+                    
+                    formData = {
+                        categoria_id: categoriasArtigos[categoria],
+                        categoria_titulo: categoria,
+                        artigo_titulo: document.getElementById('artigo_titulo').value,
+                        artigo_conteudo: document.getElementById('artigo_conteudo').innerHTML
+                    };
+                } else if (currentSheet === 'Velonews') {
+                    formData = {
+                        title: document.getElementById('title').value,
+                        content: document.getElementById('content').innerHTML,
+                        alerta_critico: document.getElementById('alerta_critico').value
+                    };
+                } else if (currentSheet === 'Bot_perguntas') {
+                    formData = {
+                        topico: document.getElementById('topico').value,
+                        contexto: document.getElementById('contexto').value,
+                        Palavras_chave: document.getElementById('Palavras_chave').value,
+                        URLs_de_Imagens: document.getElementById('URLs_de_Imagens').value
+                    };
+                }
+                
+                const response = await fetch('http://localhost:3000/api/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sheetName: currentSheet,
+                        data: formData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('status').innerHTML = `
+                        <div class="status success">
+                            ✅ ${result.message}
+                        </div>
+                    `;
+                    
+                    // Limpar formulário
+                    document.getElementById('data-form').reset();
+                    if (document.getElementById('artigo_conteudo')) {
+                        document.getElementById('artigo_conteudo').innerHTML = '';
+                    }
+                    if (document.getElementById('content')) {
+                        document.getElementById('content').innerHTML = '';
+                    }
+                    document.getElementById('preview-section').style.display = 'none';
+                    
+                    // Atualizar dados locais
+                    await checkMongoConnection();
+                    
+                } else {
+                    throw new Error(result.message || 'Erro ao publicar conteúdo');
+                }
+                
+            } catch (error) {
+                document.getElementById('status').innerHTML = `
+                    <div class="status error">
+                        ❌ Erro: ${error.message}
+                    </div>
+                `;
+            } finally {
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
