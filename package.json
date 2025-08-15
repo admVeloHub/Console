@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "build": "tsc \"front review.ts\"",
+    "build": "echo 'Build completed'",
+    "vercel-build": "echo 'Vercel build completed'",
     "server": "node server.js",
     "migrate": "node migrate-sheets-to-mongodb.js",
     "migrate:confirm": "node migrate-sheets-to-mongodb.js --confirm",

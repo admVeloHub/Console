@@ -1,6 +1,19 @@
-# Console de Conteúdo
+# Console de Conteúdo - VeloHub
 
 Projeto de revisão com arquivos HTML, JavaScript e TypeScript, migrado para MongoDB.
+
+## 🚀 Deploy
+
+**Versão Online**: [https://console-admvelohub.vercel.app](https://console-admvelohub.vercel.app)
+
+**Repositório**: [https://github.com/admVeloHub/Console](https://github.com/admVeloHub/Console)
+
+## 📋 Status
+
+✅ **Integração MongoDB Completa**  
+✅ **Deploy no Vercel**  
+✅ **APIs RESTful Funcionais**  
+✅ **Interface Moderna**
 
 ## Pré-requisitos
 
