@@ -20,7 +20,8 @@
     "clear": "node clear-mongodb.js",
     "clear:confirm": "node clear-mongodb.js --confirm",
     "test": "node test-mongodb-integration.js",
-    "test:integration": "node test-mongodb-integration.js"
+    "test:integration": "node test-mongodb-integration.js",
+    "test:collections": "node test-collections-mapping.js"
   },
   "keywords": [
     "console",

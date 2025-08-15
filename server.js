@@ -50,20 +50,60 @@ app.post('/api/submit', async (req, res) => {
         if (mongoConnected) {
             // Usar MongoDB se disponível
             const { db } = await connectToDatabase();
-            const collection = db.collection(sheetName);
-            const result = await collection.insertOne({
-                ...data,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            });
             
-            console.log(`✅ Dados inseridos no MongoDB (${sheetName}):`, result.insertedId);
+            // Mapear dados para o formato correto de cada collection
+            let mappedData = {};
+            let collectionName = '';
+            
+            if (sheetName === 'Artigos') {
+                collectionName = 'articles';
+                mappedData = {
+                    title: data.artigo_titulo,
+                    content: data.artigo_conteudo,
+                    category: data.categoria_id,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+            } else if (sheetName === 'Velonews') {
+                collectionName = 'velonews';
+                mappedData = {
+                    title: data.title,
+                    content: data.content,
+                    is_critical: data.alerta_critico,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+            } else if (sheetName === 'Bot_perguntas') {
+                collectionName = 'chatbotFaq';
+                mappedData = {
+                    topic: data.topico,
+                    context: data.contexto,
+                    keywords: data.Palavras_chave,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+            } else {
+                // Fallback para outras collections
+                collectionName = sheetName.toLowerCase();
+                mappedData = {
+                    ...data,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+            }
+            
+            const collection = db.collection(collectionName);
+            const result = await collection.insertOne(mappedData);
+            
+            console.log(`✅ Dados inseridos no MongoDB (${collectionName}):`, result.insertedId);
+            console.log('📊 Dados mapeados:', mappedData);
             
             res.json({
                 success: true,
-                message: 'Dados salvos no MongoDB com sucesso!',
+                message: `Dados salvos no MongoDB (${collectionName}) com sucesso!`,
                 id: result.insertedId,
-                storage: 'mongodb'
+                storage: 'mongodb',
+                collection: collectionName
             });
         } else {
             // Usar armazenamento local
@@ -99,13 +139,27 @@ app.get('/api/data/:sheetName', async (req, res) => {
         if (mongoConnected) {
             // Usar MongoDB se disponível
             const { db } = await connectToDatabase();
-            const collection = db.collection(sheetName);
+            
+            // Mapear nome da collection
+            let collectionName = '';
+            if (sheetName === 'Artigos') {
+                collectionName = 'articles';
+            } else if (sheetName === 'Velonews') {
+                collectionName = 'velonews';
+            } else if (sheetName === 'Bot_perguntas') {
+                collectionName = 'chatbotFaq';
+            } else {
+                collectionName = sheetName.toLowerCase();
+            }
+            
+            const collection = db.collection(collectionName);
             const data = await collection.find({}).toArray();
             
             res.json({
                 success: true,
                 data: data,
-                storage: 'mongodb'
+                storage: 'mongodb',
+                collection: collectionName
             });
         } else {
             // Usar armazenamento local
@@ -134,9 +188,9 @@ app.get('/api/central-agente', async (req, res) => {
             // Usar MongoDB se disponível
             const { db } = await connectToDatabase();
             
-            const artigos = await db.collection('Artigos').find({}).toArray();
-            const velonews = await db.collection('Velonews').find({}).toArray();
-            const botPerguntas = await db.collection('Bot_perguntas').find({}).toArray();
+            const artigos = await db.collection('articles').find({}).toArray();
+            const velonews = await db.collection('velonews').find({}).toArray();
+            const botPerguntas = await db.collection('chatbotFaq').find({}).toArray();
             
             res.json({
                 success: true,
@@ -145,7 +199,12 @@ app.get('/api/central-agente', async (req, res) => {
                     velonews: velonews,
                     botPerguntas: botPerguntas
                 },
-                storage: 'mongodb'
+                storage: 'mongodb',
+                collections: {
+                    artigos: 'articles',
+                    velonews: 'velonews',
+                    botPerguntas: 'chatbotFaq'
+                }
             });
         } else {
             // Usar armazenamento local
