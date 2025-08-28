@@ -1,24 +1,27 @@
 {
   "version": 2,
-  "name": "console-conteudo-backend",
+  "name": "console-conteudo-frontend",
   "builds": [
     {
-      "src": "server.js",
-      "use": "@vercel/node"
+      "src": "**/*",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/pages/(.*)",
+      "dest": "/pages/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/server.js"
+      "dest": "/$1"
     }
   ],
   "env": {
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "server.js": {
-      "maxDuration": 30
-    }
+    "API_URL": "https://seu-backend-url.com"
   }
 }

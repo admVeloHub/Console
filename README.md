@@ -1,14 +1,25 @@
-# 🔧 Console de Conteúdo - Backend API
+# 🎨 Console de Conteúdo - Frontend
 
-Backend API para o Console de Conteúdo da VeloAcademy.
+Frontend para o Console de Conteúdo da VeloAcademy.
 
 ## 📁 Estrutura
 
 ```
-backend/
-├── server.js              # Servidor principal
-├── package.json           # Dependências
-├── .env                   # Variáveis de ambiente
+frontend/
+├── index.html              # Página principal
+├── pages/                  # Páginas específicas
+│   ├── artigos.html       # Formulário de artigos
+│   ├── velonews.html      # Formulário de velonews
+│   └── bot-perguntas.html # Formulário de bot perguntas
+├── assets/                # Recursos estáticos
+│   ├── css/
+│   │   └── styles.css     # Estilos principais
+│   ├── js/
+│   │   └── app.js         # JavaScript principal
+│   └── images/
+│       ├── console.png    # Logo
+│       └── success.gif    # GIF de sucesso
+├── package.json           # Configurações do projeto
 ├── vercel.json           # Configuração do Vercel
 └── README.md             # Este arquivo
 ```
@@ -17,7 +28,7 @@ backend/
 
 ### Desenvolvimento Local
 ```bash
-npm start
+npm run dev
 ```
 
 ### Produção
@@ -28,99 +39,61 @@ npm start
 ## ⚙️ Configuração
 
 ### Variáveis de Ambiente
-- `MONGODB_URI`: URI de conexão com MongoDB
-- `DB_NAME`: Nome do banco de dados (padrão: console_conteudo)
-- `FRONTEND_URL`: URL do frontend para CORS
-- `NODE_ENV`: Ambiente (development/production)
+- `API_URL`: URL do backend (padrão: http://localhost:3002)
 
-### Exemplo de .env
-```env
-DB_NAME=console_conteudo
-NODE_ENV=production
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/db
-FRONTEND_URL=https://seu-frontend-url.com
-```
+### Configuração da API
+O frontend se conecta ao backend através da variável `API_BASE_URL` no arquivo `assets/js/app.js`.
 
 ## 🔧 Funcionalidades
 
-- ✅ API REST para envio de dados
-- ✅ Conexão persistente com MongoDB
-- ✅ Rate limiting para proteção
-- ✅ CORS configurado
-- ✅ Health checks
-- ✅ Logging detalhado
-- ✅ Validação de dados
-- ✅ Tratamento de erros
+- ✅ Formulários para Artigos, Velonews e Bot Perguntas
+- ✅ Feedback visual com overlay animado
+- ✅ Tema claro/escuro
+- ✅ Validação de formulários
+- ✅ Retry mechanism para falhas de conexão
+- ✅ Design responsivo
 
-## 📡 Endpoints
+## 📱 Páginas
 
-### Health Check
-- `GET /health` - Status da API e MongoDB
+1. **Página Principal** (`index.html`)
+   - Dashboard com navegação
+   - Links para todas as funcionalidades
 
-### API Principal
-- `GET /` - Documentação da API
-- `GET /api/test` - Teste de conexão
+2. **Artigos** (`pages/artigos.html`)
+   - Formulário para criação de artigos
+   - Categorias e palavras-chave
+
+3. **Velonews** (`pages/velonews.html`)
+   - Formulário para velonews
+   - Opção de alerta urgente
+
+4. **Bot Perguntas** (`pages/bot-perguntas.html`)
+   - Formulário para perguntas do bot
+   - Campos para contexto e imagens
+
+## 🎨 Design
+
+- Design moderno e responsivo
+- Tema claro/escuro
+- Animações suaves
+- Feedback visual para todas as ações
+- Interface intuitiva
+
+## 🔗 Integração com Backend
+
+O frontend se comunica com o backend através das seguintes APIs:
+
 - `POST /api/submit` - Envio de dados
+- `GET /api/test` - Teste de conexão
 - `GET /api/data/:collection` - Busca de dados
 
-### Exemplo de Uso
-
-#### Enviar dados
-```bash
-curl -X POST http://localhost:3002/api/submit \
-  -H "Content-Type: application/json" \
-  -d '{
-    "collection": "Artigos",
-    "data": {
-      "title": "Título do Artigo",
-      "content": "Conteúdo do artigo",
-      "category": "Categoria",
-      "keywords": ["palavra1", "palavra2"]
-    }
-  }'
-```
-
-#### Health Check
-```bash
-curl http://localhost:3002/health
-```
-
-## 🔒 Segurança
-
-- **Rate Limiting**: 100 requisições por IP a cada 15 minutos
-- **CORS**: Configurado apenas para o frontend
-- **Helmet**: Headers de segurança
-- **Validação**: Validação de entrada em todos os endpoints
-
-## 📊 Monitoramento
-
-- Health check endpoint para monitoramento
-- Logs detalhados de todas as operações
-- Métricas de performance
-- Status da conexão MongoDB
-
-## 🚀 Deploy
+## 📦 Deploy
 
 ### Vercel
 1. Conecte o repositório ao Vercel
-2. Configure as variáveis de ambiente
+2. Configure a variável de ambiente `API_URL`
 3. Deploy automático
 
 ### Outros
-- Pode ser deployado em qualquer plataforma Node.js
-- Configure as variáveis de ambiente adequadamente
-
-## 🔗 Integração com Frontend
-
-O backend se comunica com o frontend através de:
-
-- **CORS**: Configurado para aceitar requisições do frontend
-- **JSON**: Todas as respostas são em formato JSON
-- **HTTP Status Codes**: Códigos de status apropriados
-
-## 📈 Performance
-
-- Conexão persistente com MongoDB
-- Pool de conexões configurado
-- Timeout adequado para operações
-- Rate limiting para proteção
+- Pode ser servido por qualquer servidor web estático
+- Configure CORS adequadamente no backend

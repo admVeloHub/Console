@@ -102,7 +102,7 @@ header {
     margin: 0;
     flex-grow: 1;
     flex-shrink: 0;
-}
+}ent
 
 .logo {
     position: relative;
@@ -535,15 +535,17 @@ textarea.form-control {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: 999999;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
+    pointer-events: none;
 }
 
 .feedback-overlay.show {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 
 .feedback-container {
@@ -624,14 +626,10 @@ textarea.form-control {
     }
 }
 
-/* GIF de sucesso */
-#success-gif {
-    width: 300px;
-    height: 300px;
-    margin: 0 auto 2rem;
-    border-radius: 20px;
-    object-fit: cover;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+/* Feedback de sucesso */
+.feedback-icon i {
+    margin: 0 auto;
+    display: block;
 }
 
 /* Toast de erro */
