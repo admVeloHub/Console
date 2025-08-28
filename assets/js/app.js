@@ -6,7 +6,7 @@ console.log('🔗 API URL:', API_BASE_URL);
 
 // Funções globais
 function navigateTo(page) {
-    window.location.href = `./${page}.html`;
+    window.location.href = `./pages/${page}.html`;
 }
 
 // Função para mostrar tabs
